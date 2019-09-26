@@ -11,6 +11,8 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+
+	rice "github.com/GeertJohan/go.rice"
 )
 
 var (
@@ -26,7 +28,14 @@ func main() {
 			log.Fatal(err)
 		}
 		http.Handle("/", httputil.NewSingleHostReverseProxy(rpURL))
-	} // TODO: rice or file
+	} else {
+		box, err := rice.FindBox("dist")
+		if err != nil {
+			log.Fatal(err)
+		}
+		http.Handle("/", http.FileServer(box.HTTPBox()))
+
+	}
 	http.HandleFunc("/ws", WsHandler)
 
 	// Testing
