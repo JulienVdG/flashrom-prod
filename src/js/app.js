@@ -59,37 +59,43 @@ define('app', ['ractive', 'logger', 'underscore', 'moment'], function(ractive, l
 	});
     }
 
+    function startWs(loc) {
+	ws = new WebSocket(loc);
+	ws.onopen = function(event) {
+	    logger.debug("WebSocket :: open");
+	};
+	ws.onmessage = function(event) {
+	    var wsMessage=JSON.parse(event.data);
+	    processMessage(wsMessage);
+	};
+	ws.onclose= function(event) {
+	    map = {'Status':'disconnected','Disabled':true,'Message':"Disconnected, wait for reconnexion... or try reloading the page."};
+	    ractive.set(map);
+	    logger.debug("WebSocket :: closed");
+	    ws = null;
+	    // Try to reconnect in 5 seconds
+	    setTimeout(function(){startWs(loc);}, 5000);
+	};
+	ws.onerror = function(event) {
+	    logger.error("WebSocket :: error");
+	    console.error("WebSocket error :", event);
+	};
+    }
 
     logger.debug("Defining Module :: app");
 
     function Init() {
         logger.debug("App :: Init");
-	// testing ...
-	//map = {'Status':'idle','Config':['One','Two','Three']};
-	//map = {'Status':'idle','Config':['single']};
-	//ractive.set(map);
-	//ractive.set('Status', 'idle');
 
 	// Open WS
-	ws = new WebSocket("ws://" + location.host + "/ws");
-	ws.onmessage = function(event) {
-		var wsMessage=JSON.parse(event.data);
-		processMessage(wsMessage);
-	    };
-	ws.onclose= function(event) {
-	    ractive.set('Status', 'disconnected');
-	    console.log("WebSocket is closed now.");
-	};
-	ws.onerror = function(event) {
-	    console.error("WebSocket error observed:", event);
-	};
+	startWs("ws://" + location.host + "/ws");
 
 	// Connect events
 	ractive.on({
 	    'start': function( ctx ) {
-		ractive.set("Disabled", true);
-		cfg = ractive.get("ConfigId");
-		msg={Cmd:"start",value:{ConfigId:cfg}};
+		ractive.set('Disabled', true);
+		cfg = ractive.get('ConfigId');
+		msg={Cmd:'start',value:{ConfigId:cfg}};
 		ws.send(JSON.stringify(msg));
 	    }
 	});

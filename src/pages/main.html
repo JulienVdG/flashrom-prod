@@ -36,7 +36,7 @@
 <div class="row">
     <div class="col">
 	{{#if Message}}
-	<p class="alert alert-{{#if Status=='success'}}success{{elseif Status=='error'}}danger{{else}}warning{{/if}}" role="alert">
+	<p class="alert alert-{{#if Status=='success'}}success{{elseif Status=='error' || Status=='disconnected'}}danger{{else}}warning{{/if}}" role="alert">
 	{{Message}}
 	</p>
 	{{/if}}

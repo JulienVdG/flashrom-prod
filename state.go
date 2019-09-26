@@ -31,8 +31,8 @@ type State struct {
 	Status   Status
 	Disabled bool
 	Config   []string
-	ConfigId int    `json:",omitempty"`
-	Message  string `json:",omitempty"`
+	ConfigId int `json:",omitempty"`
+	Message  string
 	Logs     []Log
 }
 
