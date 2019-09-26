@@ -30,8 +30,9 @@ func main() {
 	http.HandleFunc("/ws", WsHandler)
 
 	// Testing
-	CurrentState.Status = StatusIdle
-	CurrentState.Config = []string{"One", "Two", "Three"}
+	currentState.Status = StatusIdle
+	currentState.Config = []string{"One", "Two", "Three"}
+	//currentState.ConfigId = 2
 
 	if err := http.ListenAndServe(*addr, nil); err != nil {
 		log.Fatal(err)

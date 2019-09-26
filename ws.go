@@ -28,6 +28,7 @@ type WsCmd string
 const (
 	WsCmdSet    WsCmd = "set"
 	WsCmdUpdate WsCmd = "update"
+	WsCmdStart  WsCmd = "start"
 )
 
 type WsMessage struct {
@@ -44,7 +45,7 @@ func register(ws *websocket.Conn) chan State {
 	logDebug("register %v\n", ws.RemoteAddr())
 	ch := make(chan State)
 	go func() {
-		ch <- CurrentState
+		ch <- GetState()
 	}()
 	clients[ws] = ch
 	return ch
@@ -53,6 +54,12 @@ func register(ws *websocket.Conn) chan State {
 func unregister(ws *websocket.Conn) {
 	logDebug("unregister %v\n", ws.RemoteAddr())
 	delete(clients, ws)
+}
+
+func SendCurrentState() {
+	for _, ch := range clients {
+		ch <- GetState()
+	}
 }
 
 const (
@@ -92,7 +99,28 @@ func reader(ws *websocket.Conn) {
 			break
 		}
 		if messageType == websocket.TextMessage {
-			logDebug("Recived %q\n", p)
+			verbDebug("Recived %q\n", p)
+			var msg WsMessage
+			err := json.Unmarshal(p, &msg)
+			if err != nil {
+				verbDebug("ReadMessage Unmarshal: %v\n", err)
+			}
+			logDebug("Recived %v\n", msg)
+			switch msg.Cmd {
+			case WsCmdStart:
+				confId, ok := msg.getConfigId()
+				if !ok || confId == 0 {
+					UpdateConfigId(0)
+					SetErrorState("Please select a configuration!")
+					break
+				}
+				UpdateConfigId(confId)
+				//TODO
+				SetSuccessState("Done!")
+				//SendCurrentState()
+			default:
+				verbDebug("ReadMessage Unsupported Cmd: %v\n", msg.Cmd)
+			}
 		}
 	}
 }
@@ -132,4 +160,25 @@ func writer(ws *websocket.Conn) {
 			}
 		}
 	}
+}
+
+func (msg WsMessage) getConfigId() (int, bool) {
+	//fmt.Println(reflect.TypeOf(msg.Value).String())
+	value, ok := msg.Value.(map[string]interface{})
+	if !ok {
+		verbDebug("ReadMessage start: missing value map\n")
+		return 0, false
+	}
+	confId, ok := value["ConfigId"]
+	if !ok {
+		verbDebug("ReadMessage start: missing ConfigId value\n")
+		return 0, false
+	}
+	//fmt.Println(reflect.TypeOf(confId).String())
+	val, ok := confId.(float64)
+	if !ok {
+		verbDebug("ReadMessage start: ConfigId is not aa number\n")
+		return 0, false
+	}
+	return int(val), ok
 }

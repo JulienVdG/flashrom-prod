@@ -74,8 +74,9 @@ define('app', ['ractive', 'logger', 'underscore'], function(ractive, logger, _) 
 	// Connect events
 	ractive.on({
 	    'start': function( ctx ) {
-		//ctx.node.setAttribute("disabled", "");
-		msg={Cmd:"start"};
+		ractive.set("Disabled", true);
+		cfg = ractive.get("ConfigId");
+		msg={Cmd:"start",value:{ConfigId:cfg}};
 		ws.send(JSON.stringify(msg));
 	    }
 	});

@@ -9,17 +9,20 @@
 	    <div class="input-group-prepend">
 		<label class="input-group-text" for="inputConfigSelect">Configuration:</label>
 	    </div>
-	    <select class="custom-select" id="inputConfigSelect">
-		{{#if Config.length > 1 }}<option selected>Choose...</option>
+	    <select class="custom-select" id="inputConfigSelect"
+		value="{{ ConfigId }}"
+		{{#if Disabled }}disabled{{/if}}>
+		{{#if Config.length > 1 }}<option value="{{ 0 }}" selected>Choose...</option>
 		{{/if}}
-		{{#each Config as conf, @index as i}}<option value="{{ i }}">{{ conf }}</option>
+		{{#each Config as conf, @index as i}}<option value="{{ i+1 }}">{{ conf }}</option>
 		{{/each}}
 	    </select>
 	</div>
     </div>
     <div class="col">
 	<button type="button" class="btn btn-primary btn-block"
-	    on-click="@this.fire( 'start', @context)">Start</button>
+	    on-click="@this.fire( 'start', @context)"
+	    {{#if Disabled }}disabled{{/if}}>Start</button>
     </div>
     <div class="col">
 	<div class="input-group mb-3">
@@ -32,6 +35,11 @@
 </div>
 <div class="row">
     <div class="col">
+	{{#if Message}}
+	<p class="alert alert-{{#if Status=='success'}}success{{elseif Status=='error'}}danger{{else}}warning{{/if}}" role="alert">
+	{{Message}}
+	</p>
+	{{/if}}
     </div>
 </div>
 
