@@ -45,12 +45,57 @@ define('logger', function() {
 });
 
 define('app', ['ractive', 'logger', 'underscore'], function(ractive, logger, _) {
+    var ws;
 
     logger.debug("Defining Module :: app");
 
     function Init() {
         logger.debug("App :: Init");
-	ractive.set('Status', 'idle');
+	// testing ...
+	//map = {'Status':'idle','Config':['One','Two','Three']};
+	//map = {'Status':'idle','Config':['single']};
+	//ractive.set(map);
+	//ractive.set('Status', 'idle');
+
+	// Open WS
+	ws = new WebSocket("ws://" + location.host + "/ws");
+	ws.onmessage = function(event) {
+		var wsMessage=JSON.parse(event.data);
+		processMessage(wsMessage);
+	    };
+	ws.onclose= function(event) {
+	    ractive.set('Status', 'disconnected');
+	    console.log("WebSocket is closed now.");
+	};
+	ws.onerror = function(event) {
+	    console.error("WebSocket error observed:", event);
+	};
+
+	// Connect events
+	ractive.on({
+	    'start': function( ctx ) {
+		//ctx.node.setAttribute("disabled", "");
+		msg={Cmd:"start"};
+		ws.send(JSON.stringify(msg));
+	    }
+	});
+
+    }
+
+    function processMessage(msg) {
+	switch (msg.Cmd) {
+	    case 'set':
+		logger.debug("Msg :: set");
+		ractive.set(msg.Value);
+		break;
+	    case 'update':
+		logger.debug("Msg :: update "+msg.Field);
+		ractive.set(msg.Field, msg.Value);
+		break;
+	    default:
+		logger.error("Msg :: Unknown command");
+		console.log(msg);
+	}
     }
 
     return {

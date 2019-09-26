@@ -27,6 +27,11 @@ func main() {
 		}
 		http.Handle("/", httputil.NewSingleHostReverseProxy(rpURL))
 	} // TODO: rice or file
+	http.HandleFunc("/ws", WsHandler)
+
+	// Testing
+	CurrentState.Status = StatusIdle
+	CurrentState.Config = []string{"One", "Two", "Three"}
 
 	if err := http.ListenAndServe(*addr, nil); err != nil {
 		log.Fatal(err)

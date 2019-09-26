@@ -7,18 +7,19 @@
     <div class="col">
 	<div class="input-group mb-3">
 	    <div class="input-group-prepend">
-		<label class="input-group-text" for="inputGroupSelect01">Configuration:</label>
+		<label class="input-group-text" for="inputConfigSelect">Configuration:</label>
 	    </div>
-	    <select class="custom-select" id="inputGroupSelect01">
-		<option selected>Choose...</option>
-		<option value="1">One</option>
-		<option value="2">Two</option>
-		<option value="3">Three</option>
+	    <select class="custom-select" id="inputConfigSelect">
+		{{#if Config.length > 1 }}<option selected>Choose...</option>
+		{{/if}}
+		{{#each Config as conf, @index as i}}<option value="{{ i }}">{{ conf }}</option>
+		{{/each}}
 	    </select>
 	</div>
     </div>
     <div class="col">
-	<button type="button" class="btn btn-primary btn-block">Start</button>
+	<button type="button" class="btn btn-primary btn-block"
+	    on-click="@this.fire( 'start', @context)">Start</button>
     </div>
     <div class="col">
 	<div class="input-group mb-3">
