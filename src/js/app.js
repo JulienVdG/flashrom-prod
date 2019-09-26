@@ -44,8 +44,21 @@ define('logger', function() {
     };
 });
 
-define('app', ['ractive', 'logger', 'underscore'], function(ractive, logger, _) {
+define('app', ['ractive', 'logger', 'underscore', 'moment'], function(ractive, logger, _, moment) {
     var ws;
+
+    var apiDateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ';
+
+    function dateFormatStd(date) {
+        return moment(date, apiDateFormat).format('MM/DD/YYYY HH:mm:ss Z');
+    }
+
+    function setLogsDate(logs) {
+	logs.forEach(function(l) {
+	    l.Date = dateFormatStd(l.Time);
+	});
+    }
+
 
     logger.debug("Defining Module :: app");
 
@@ -87,10 +100,17 @@ define('app', ['ractive', 'logger', 'underscore'], function(ractive, logger, _) 
 	switch (msg.Cmd) {
 	    case 'set':
 		logger.debug("Msg :: set");
+		setLogsDate(msg.Value.Logs);
 		ractive.set(msg.Value);
 		break;
 	    case 'update':
 		logger.debug("Msg :: update "+msg.Field);
+		switch(msg.Field) {
+		    case "Logs":
+			setLogsDate(msg.Value);
+			break;
+		    default:
+		}
 		ractive.set(msg.Field, msg.Value);
 		break;
 	    default:

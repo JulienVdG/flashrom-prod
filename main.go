@@ -33,6 +33,7 @@ func main() {
 	currentState.Status = StatusIdle
 	currentState.Config = []string{"One", "Two", "Three"}
 	//currentState.ConfigId = 2
+	AddLog(StatusIdle, "Starting", "This is to display raw command for more info,\n\nText is:\n - preformated,\n - multiline.\n")
 
 	if err := http.ListenAndServe(*addr, nil); err != nil {
 		log.Fatal(err)

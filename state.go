@@ -5,17 +5,27 @@
 
 package main
 
-import "sync"
+import (
+	"sync"
+	"time"
+)
 
 // Status describe the current programmer status
 type Status string
 
 // Status possible values
 const (
-	StatusIdle   Status = "idle"
-	StatusError  Status = "error"
-	StatusSucces Status = "succes"
+	StatusIdle    Status = "idle"
+	StatusError   Status = "error"
+	StatusSuccess Status = "success"
 )
+
+type Log struct {
+	Time    time.Time
+	Level   Status
+	Message string
+	Detail  string `json:",omitempty"`
+}
 
 type State struct {
 	Status   Status
@@ -23,6 +33,7 @@ type State struct {
 	Config   []string
 	ConfigId int    `json:",omitempty"`
 	Message  string `json:",omitempty"`
+	Logs     []Log
 }
 
 var (
@@ -38,6 +49,7 @@ func GetState() State {
 }
 
 func setStateMessage(st Status, message string) {
+	AddLog(st, message, "")
 	stateMu.Lock()
 	currentState.Message = message
 	currentState.Status = st
@@ -50,11 +62,24 @@ func SetErrorState(message string) {
 }
 
 func SetSuccessState(message string) {
-	setStateMessage(StatusSucces, message)
+	setStateMessage(StatusSuccess, message)
 }
 
 func UpdateConfigId(confId int) {
 	stateMu.Lock()
 	currentState.ConfigId = confId
 	stateMu.Unlock()
+}
+
+func AddLog(level Status, message, detail string) {
+	log := Log{
+		Time:    time.Now(),
+		Level:   level,
+		Message: message,
+		Detail:  detail,
+	}
+	stateMu.Lock()
+	currentState.Logs = append(currentState.Logs, log)
+	stateMu.Unlock()
+	SendCurrentState()
 }
