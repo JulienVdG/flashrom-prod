@@ -21,7 +21,9 @@ var (
 )
 
 func main() {
+	currentState.Status = StatusIdle
 	flag.Parse()
+	ReadConfig()
 	if *flagP {
 		rpURL, err := url.Parse("http://localhost:3000/")
 		if err != nil {
@@ -39,9 +41,6 @@ func main() {
 	http.HandleFunc("/ws", WsHandler)
 
 	// Testing
-	currentState.Status = StatusIdle
-	currentState.Config = []string{"One", "Two", "Three"}
-	//currentState.ConfigId = 2
 	AddLog(StatusIdle, "Starting", "This is to display raw command for more info,\n\nText is:\n - preformated,\n - multiline.\n")
 
 	// Start the flashrom monitoring job

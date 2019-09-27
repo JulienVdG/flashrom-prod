@@ -1,0 +1,19 @@
+{
+   "Configs" : [
+      {
+         "Name" : "OK",
+         "FlashChip" : "MX25L25635F",
+         "Commandline" : "./script/fakeflashrom.sh"
+      },
+      {
+         "Name" : "Error No/Wrong Chip",
+         "FlashChip" : "MX25L25635F",
+         "Commandline" : "./script/fakeflashrom.sh none"
+      },
+      {
+         "Name" : "Error Config",
+         "FlashChip" : "MX25L25635F",
+         "Commandline" : "./script/fakeflashrom.sh multi"
+      }
+   ]
+}
