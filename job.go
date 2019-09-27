@@ -5,48 +5,43 @@
 
 package main
 
-import "time"
-
-type jobState int8
-
-const (
-	jobStateIdle jobState = iota
-	jobStart
-	jobRunning
-	jobEnd
+import (
+	"fmt"
+	"time"
 )
 
 var (
-	jobCh = make(chan jobState)
+	startConfCh = make(chan int)
+	jobDoneCh   = make(chan struct{})
 )
 
-func StartJob() {
-	jobCh <- jobStart
+func StartJob(confId int) {
+	startConfCh <- confId
 }
 
 func JobMonitor() {
-	var state jobState
+	var stateJobRunning bool
 	for {
 		select {
-		case cmd := <-jobCh:
-			switch state {
-			case jobStateIdle:
-				if cmd == jobStart {
-					state = jobRunning
-					go Job()
-				}
-			default:
-				if cmd == jobEnd {
-					state = jobStateIdle
-				}
+		case confId := <-startConfCh:
+			if !stateJobRunning {
+				stateJobRunning = true
+				go Job(confId)
 			}
+		case <-jobDoneCh:
+			stateJobRunning = false
 		}
 	}
 }
 
-func Job() {
-	defer func() { jobCh <- jobEnd }()
-	SetRunningState("start")
+func Job(confId int) {
+	defer func() { jobDoneCh <- struct{}{} }()
+	if confId <= 0 || confId > len(Cfg.Configs) {
+		SetErrorState("Please select a valid configuration!")
+	}
+	c := Cfg.Configs[confId-1]
+	msg := fmt.Sprintf("Start flashing configuration '%s' in flash '%s'...", c.Name, c.FlashChip)
+	SetRunningState(msg)
 	time.Sleep(2 * time.Second)
 	SetSuccessState("Done!")
 }

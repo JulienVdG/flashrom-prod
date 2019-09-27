@@ -115,7 +115,7 @@ func reader(ws *websocket.Conn) {
 					break
 				}
 				UpdateConfigId(confId)
-				StartJob()
+				StartJob(confId)
 			default:
 				verbDebug("ReadMessage Unsupported Cmd: %v\n", msg.Cmd)
 			}

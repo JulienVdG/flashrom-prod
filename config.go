@@ -11,12 +11,14 @@ import (
 	"os"
 )
 
+type CfgLine struct {
+	Name        string
+	Commandline string
+	FlashChip   string
+}
+
 type Config struct {
-	Configs []struct {
-		Name        string
-		Commandline string
-		FlashChip   string
-	}
+	Configs []CfgLine
 }
 
 var Cfg Config
