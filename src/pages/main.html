@@ -46,14 +46,16 @@
     <div class="col d-flex flex-column-reverse">
 	{{#each Logs as log}}
 	<div class="row">
-	    <div class="col-2">
+	    <div class="col-3 col-md-2">
 		<p class="date">{{ .Date }}</p>
 	    </div>
-	    <div class="col-1">
+	    <div class="col-3 col-md-2 col-lg-1">
 		{{#if .Level === "error"}}
 		<span class="badge badge-pill badge-danger">Error</span>
 		{{elseif .Level === "success"}}
 		<span class="badge badge-pill badge-success">Success</span>
+		{{elseif .Level === "running"}}
+		<span class="badge badge-pill badge-warning">Running</span>
 		{{else}}
 		<span class="badge badge-pill badge-secondary">Info</span>
 		{{/if}}

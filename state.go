@@ -18,6 +18,7 @@ const (
 	StatusIdle    Status = "idle"
 	StatusError   Status = "error"
 	StatusSuccess Status = "success"
+	StatusRunning Status = "running"
 )
 
 type Log struct {
@@ -53,6 +54,12 @@ func setStateMessage(st Status, message string) {
 	stateMu.Lock()
 	currentState.Message = message
 	currentState.Status = st
+	switch st {
+	case StatusRunning:
+		currentState.Disabled = true
+	default:
+		currentState.Disabled = false
+	}
 	stateMu.Unlock()
 	SendCurrentState()
 }
@@ -63,6 +70,10 @@ func SetErrorState(message string) {
 
 func SetSuccessState(message string) {
 	setStateMessage(StatusSuccess, message)
+}
+
+func SetRunningState(message string) {
+	setStateMessage(StatusRunning, message)
 }
 
 func UpdateConfigId(confId int) {
