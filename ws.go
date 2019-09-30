@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -38,25 +39,34 @@ type WsMessage struct {
 }
 
 var (
-	clients = make(map[*websocket.Conn]chan State)
+	clients   = make(map[*websocket.Conn]chan State)
+	clientsMu sync.RWMutex
 )
 
 func register(ws *websocket.Conn) chan State {
 	logDebug("register %v\n", ws.RemoteAddr())
-	ch := make(chan State)
+	ch := make(chan State, 5)
 	go func() {
 		ch <- GetState()
 	}()
+	clientsMu.Lock()
 	clients[ws] = ch
+	clientsMu.Unlock()
 	return ch
 }
 
 func unregister(ws *websocket.Conn) {
 	logDebug("unregister %v\n", ws.RemoteAddr())
+	clientsMu.Lock()
+	defer clientsMu.Unlock()
+	ch := clients[ws]
+	close(ch)
 	delete(clients, ws)
 }
 
 func SendCurrentState() {
+	clientsMu.RLock()
+	defer clientsMu.RUnlock()
 	for _, ch := range clients {
 		ch <- GetState()
 	}
