@@ -89,6 +89,7 @@ func addLog(level Status, message, detail string) {
 		Message: message,
 		Detail:  detail,
 	}
+	WriteLog(log)
 	stateMu.Lock()
 	currentState.Logs = append(currentState.Logs, log)
 	stateMu.Unlock()

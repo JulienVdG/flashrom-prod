@@ -16,13 +16,19 @@ import (
 )
 
 var (
-	addr  = flag.String("addr", ":8080", "http service address")
-	flagP = flag.Bool("p", false, "dev: proxy to \"http://localhost:3000/\"")
+	addr   = flag.String("addr", ":8080", "http service address")
+	flagP  = flag.Bool("p", false, "dev: proxy to \"http://localhost:3000/\"")
+	logdir = flag.String("l", "logs/", "log directory")
 )
 
 func main() {
 	currentState.Status = StatusIdle
 	flag.Parse()
+	err := OpenLog(*logdir)
+	defer CloseLog()
+	if err != nil {
+		log.Fatal(err)
+	}
 	ReadConfig()
 	if *flagP {
 		rpURL, err := url.Parse("http://localhost:3000/")
@@ -39,9 +45,6 @@ func main() {
 
 	}
 	http.HandleFunc("/ws", WsHandler)
-
-	// Testing
-	AddLog(StatusIdle, "Starting", "This is to display raw command for more info,\n\nText is:\n - preformated,\n - multiline.\n")
 
 	// Start the flashrom monitoring job
 	go JobMonitor()
