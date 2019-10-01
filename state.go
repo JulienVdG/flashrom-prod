@@ -50,7 +50,7 @@ func GetState() State {
 }
 
 func setStateMessage(st Status, message string) {
-	AddLog(st, message, "")
+	addLog(st, message, "")
 	stateMu.Lock()
 	currentState.Message = message
 	currentState.Status = st
@@ -82,7 +82,7 @@ func UpdateConfigId(confId int) {
 	stateMu.Unlock()
 }
 
-func AddLog(level Status, message, detail string) {
+func addLog(level Status, message, detail string) {
 	log := Log{
 		Time:    time.Now(),
 		Level:   level,
@@ -92,5 +92,9 @@ func AddLog(level Status, message, detail string) {
 	stateMu.Lock()
 	currentState.Logs = append(currentState.Logs, log)
 	stateMu.Unlock()
+}
+
+func AddLog(level Status, message, detail string) {
+	addLog(level, message, detail)
 	SendCurrentState()
 }
