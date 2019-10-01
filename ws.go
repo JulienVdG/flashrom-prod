@@ -121,7 +121,7 @@ func reader(ws *websocket.Conn) {
 				confId, ok := msg.getConfigId()
 				if !ok || confId == 0 {
 					UpdateConfigId(0)
-					SetErrorState("Please select a configuration!")
+					SetErrorState("Please select a configuration!", "")
 					break
 				}
 				UpdateConfigId(confId)

@@ -6,6 +6,11 @@
          "Commandline" : "./script/fakeflashrom.sh"
       },
       {
+         "Name" : "OK same content",
+         "FlashChip" : "MX25L25635F",
+         "Commandline" : "./script/fakeflashrom.sh same-content"
+      },
+      {
          "Name" : "Error No/Wrong Chip",
          "FlashChip" : "MX25L25635F",
          "Commandline" : "./script/fakeflashrom.sh none"
@@ -14,6 +19,16 @@
          "Name" : "Error Config",
          "FlashChip" : "MX25L25635F",
          "Commandline" : "./script/fakeflashrom.sh multi"
+      },
+      {
+         "Name" : "Erase Error",
+         "FlashChip" : "MX25L25635F",
+         "Commandline" : "./script/fakeflashrom.sh erase-error"
+      },
+      {
+         "Name" : "Error cmd",
+         "FlashChip" : "MX25L25635F",
+         "Commandline" : "./script/fakeflashrom"
       }
    ]
 }

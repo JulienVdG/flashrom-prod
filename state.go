@@ -49,8 +49,8 @@ func GetState() State {
 	return s
 }
 
-func setStateMessage(st Status, message string) {
-	addLog(st, message, "")
+func setStateMessage(st Status, message, detail string) {
+	addLog(st, message, detail)
 	stateMu.Lock()
 	currentState.Message = message
 	currentState.Status = st
@@ -64,16 +64,16 @@ func setStateMessage(st Status, message string) {
 	SendCurrentState()
 }
 
-func SetErrorState(message string) {
-	setStateMessage(StatusError, message)
+func SetErrorState(message, detail string) {
+	setStateMessage(StatusError, message, detail)
 }
 
-func SetSuccessState(message string) {
-	setStateMessage(StatusSuccess, message)
+func SetSuccessState(message, detail string) {
+	setStateMessage(StatusSuccess, message, detail)
 }
 
-func SetRunningState(message string) {
-	setStateMessage(StatusRunning, message)
+func SetRunningState(message, detail string) {
+	setStateMessage(StatusRunning, message, detail)
 }
 
 func UpdateConfigId(confId int) {
