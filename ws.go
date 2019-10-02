@@ -7,19 +7,11 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
-)
-
-var (
-	verbDebug = fmt.Printf
-	//verbDebug = func(string, ...interface{}) {}
-	logDebug = fmt.Printf
-	//logDebug = func(string, ...interface{}) {}
 )
 
 // wsCmd describe the command send in the jsom message over ws
@@ -115,7 +107,7 @@ func reader(ws *websocket.Conn) {
 			if err != nil {
 				verbDebug("ReadMessage Unmarshal: %v\n", err)
 			}
-			logDebug("Recived %v\n", msg)
+			verbDebug("Recived %v\n", msg)
 			switch msg.Cmd {
 			case WsCmdStart:
 				confId, ok := msg.getConfigId()

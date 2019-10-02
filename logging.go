@@ -16,6 +16,13 @@ import (
 )
 
 var (
+	//verbDebug = fmt.Printf
+	verbDebug = func(string, ...interface{}) {}
+	logDebug  = fmt.Printf
+	//logDebug = func(string, ...interface{}) {}
+)
+
+var (
 	logFile io.WriteCloser
 	logMu   sync.Mutex
 )

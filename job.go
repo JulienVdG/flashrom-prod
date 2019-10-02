@@ -47,7 +47,7 @@ func Job(confId int) {
 	msg := fmt.Sprintf("Start flashing configuration '%s' in flash '%s'...", c.Name, c.FlashChip)
 	SetRunningState(msg, c.Commandline)
 	cmdline := strings.Fields(c.Commandline)
-	gExpect, ch, err := expect.SpawnWithArgs(cmdline, -1, expect.PartialMatch(true), expect.Verbose(true))
+	gExpect, ch, err := expect.SpawnWithArgs(cmdline, -1, expect.PartialMatch(true))
 	if err != nil {
 		SetErrorState("Could not run flashrom command!", err.Error())
 		return
@@ -55,7 +55,7 @@ func Job(confId int) {
 	defer func() {
 		err = gExpect.Close()
 		if err != nil {
-			fmt.Printf("error closing expect: %v\n", err)
+			logDebug("error closing expect: %v\n", err)
 		}
 		<-ch
 	}()
@@ -80,7 +80,7 @@ func Job(confId int) {
 	if stop {
 		return
 	}
-	fmt.Printf("i:%v\n", i)
+	verbDebug("i:%v\n", i)
 	if i == 2 {
 		stop, i, outlog = jobExpect(gExpect, regexp.MustCompile("(Erase/write done.)"), []string{}, outlog)
 		if stop {
@@ -103,7 +103,7 @@ func Job(confId int) {
 func jobExpect(gExpect *expect.GExpect, re *regexp.Regexp, messages []string, prevoutlog string) (bool, int, string) {
 	out, match, err := gExpect.Expect(re, -1)
 	outlog := prevoutlog + out
-	fmt.Printf("Out:%v\nMatch:%#v\nErr:%v\n", out, match, err)
+	verbDebug("Out:%v\nMatch:%#v\nErr:%v\n", out, match, err)
 	if err != nil {
 		outlog = jobErrorState(gExpect, "flashrom monitoring failed", outlog, err)
 		return true, 0, outlog
