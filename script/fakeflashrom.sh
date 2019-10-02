@@ -30,6 +30,11 @@ Found Macronix flash chip "MX25L25635F" (32768 kB, SPI) on linux_spi.
 EOF
 esac
 
+if [ "$1" = "nofile" ]; then
+	echo "Error: opening file "this_file_doesnt_exist" failed: No such file or directory"
+	exit 0
+fi
+
 # TODO improve error simulation (ie handle multiple erase function)
 	echo -n "Reading old flash chip contents... "
 	sleep 1

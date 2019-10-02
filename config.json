@@ -16,6 +16,11 @@
          "Commandline" : "./script/fakeflashrom.sh none"
       },
       {
+         "Name" : "Error Missing file",
+         "FlashChip" : "MX25L25635F",
+         "Commandline" : "./script/fakeflashrom.sh nofile"
+      },
+      {
          "Name" : "Error Config",
          "FlashChip" : "MX25L25635F",
          "Commandline" : "./script/fakeflashrom.sh multi"

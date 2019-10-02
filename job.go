@@ -60,9 +60,10 @@ func Job(confId int) {
 		<-ch
 	}()
 
-	stop, i, outlog := jobExpect(gExpect, regexp.MustCompile("(No EEPROM/flash device found.)|(Multiple flash chip definitions match the detected chip\\(s\\):)|(Reading old flash chip contents... )"), []string{
+	stop, i, outlog := jobExpect(gExpect, regexp.MustCompile("(No EEPROM/flash device found.)|(Multiple flash chip definitions match the detected chip\\(s\\):)|(Error: opening file .* failed: No such file or directory)|(Reading old flash chip contents... )"), []string{
 		"No Flash chip found! Verify that the chip in the socket is present, correct and correctly oriented.",
 		"Multiple chip model are detected, this is a configuration issue!",
+		"No flash file found, this is a configuration issue!",
 	}, "")
 	if stop {
 		return
